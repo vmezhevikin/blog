@@ -1,0 +1,106 @@
+html {
+	position: relative;
+	min-height: 100%;
+}
+
+.body {
+	background: #e5e5e5;
+	margin-bottom: 60px;
+}
+
+#xs-option {
+	margin-bottom: 20px;
+}
+
+.article {
+	background: #ffffff;
+}
+
+.article-text {
+	margin-bottom: 20px;
+}
+
+.article-image {
+	width: 100%;
+	border-radius: 3px;
+}
+
+.article-stat {
+	cursor: default;
+	color: #6e6e6e;
+}
+
+.comment {
+	border-top: 1px solid #c1c1c1;
+}
+
+.comment-image {
+	width: 120px;
+	height: 120px;
+	padding: 10px;
+	border-radius: 3px;
+	float: left;
+	display: table-cell;
+}
+
+.comment-text {
+	margin: 10px;
+	padding: 0 10px;
+	display: table-cell;
+}
+
+.comment-textarea {
+	width: 100%;
+	margin-top: 20px;
+}
+
+.comment .btn {
+	margin: 10px 0 15px;
+}
+
+.comment-more .btn,
+.article-more .btn {
+	width: 100%;
+	margin: 10px 0 0;
+}
+
+.comment-more #loadMoreCommentIndicator,
+.article-more #loadMoreArticleIndicator {
+	display: block;
+	margin: auto;
+}
+
+.footer {
+	background: #292c2f;
+	color: #ffffff;
+	width: 100%;
+
+	/* sticky footer */
+	position: absolute;
+	bottom: 0;
+	/* look margin-bottom of .body */
+	height: 60px;
+}
+
+.footer .row {
+	margin: 0 30px;
+}
+
+.footer-text {
+	color: #ffffff;
+	margin: 0 15px;
+}
+
+#fileInput {
+	display: none;
+}
+
+@media (min-width: 767px) {
+	#categoryList {
+		display: block;
+	}
+
+	#xs-option {
+		display: none;
+	}
+}
