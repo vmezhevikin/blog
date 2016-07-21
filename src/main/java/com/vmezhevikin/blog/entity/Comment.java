@@ -1,7 +1,7 @@
 package com.vmezhevikin.blog.entity;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,6 +12,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.joda.time.DateTime;
 
 @Entity
 @Table(name = "comment")
@@ -36,7 +39,7 @@ public class Comment implements Serializable {
 	private String text;
 	
 	@Column(nullable = false)
-	private Date date;
+	private Timestamp date;
 
 	public Comment() {
 		super();
@@ -74,12 +77,17 @@ public class Comment implements Serializable {
 		this.text = text;
 	}
 
-	public Date getDate() {
+	public Timestamp getDate() {
 		return date;
 	}
 
-	public void setDate(Date date) {
+	public void setDate(Timestamp date) {
 		this.date = date;
+	}
+
+	@Transient
+	public String getDateAsFormattedString() {
+		return new DateTime(date).toString("EEEE, MMMM dd, yyyy hh:mm aa");
 	}
 	
 	//TODO hash equals

@@ -9,14 +9,15 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.Random;
 import java.util.UUID;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import net.coobird.thumbnailator.Thumbnails;
@@ -75,7 +76,10 @@ public class DataGenerator {
 
 				@Override
 				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-					Files.delete(file);
+					String fileName = file.toFile().getName();
+					if (!fileName.contains("img") && !fileName.contains("loading")) {
+						Files.delete(file);
+					}
 					return FileVisitResult.CONTINUE;
 				}
 
@@ -91,10 +95,10 @@ public class DataGenerator {
 	private static void clearDB(Connection connection) throws SQLException {
 		System.out.println("Clearing DB");
 		Statement statement = connection.createStatement();
-		statement.executeUpdate("delete from category");
-		statement.executeUpdate("delete from author");
-		statement.executeUpdate("delete from article");
 		statement.executeUpdate("delete from comment");
+		statement.executeUpdate("delete from article");
+		statement.executeUpdate("delete from author");
+		statement.executeUpdate("delete from category");
 		statement.executeUpdate("alter table category auto_increment = 1");
 		statement.executeUpdate("alter table author auto_increment = 1");
 		statement.executeUpdate("alter table article auto_increment = 1");
@@ -160,20 +164,23 @@ public class DataGenerator {
 		String sql = "insert into article (id_author, id_category, name, description, text, date, img) "
 				+ "values (?,?,?,?,?,?,?)";
 		PreparedStatement statement = connection.prepareStatement(sql);
-		File[] files = new File(TITLES_DIR).listFiles();
-		totalArticles = files.length;
-		for (File file : files) {
-			statement.setLong(1, RAND.nextInt(totalAuthors) + 1);
-			statement.setShort(2, (short) (RAND.nextInt(totalCategories) + 1));
-			statement.setString(3, DUMMY_TITLE[RAND.nextInt(DUMMY_TITLE.length)]);
-			String desc = DUMMY_PAR[RAND.nextInt(DUMMY_PAR.length)];
-			statement.setString(4, desc);
-			statement.setString(5, generateText(desc));
-			statement.setDate(6, generatDate());
-			String uuid = copyImage("title", file);
-			String img = "/media/title/" + uuid;
-			statement.setString(7, img);
-			statement.addBatch();
+		totalArticles = 0;
+		for (int i = 0; i < 3; i++) {
+			File[] files = new File(TITLES_DIR).listFiles();
+			totalArticles += files.length;
+			for (File file : files) {
+				statement.setLong(1, RAND.nextInt(totalAuthors) + 1);
+				statement.setShort(2, (short) (RAND.nextInt(totalCategories) + 1));
+				statement.setString(3, DUMMY_TITLE[RAND.nextInt(DUMMY_TITLE.length)]);
+				String desc = DUMMY_PAR[RAND.nextInt(DUMMY_PAR.length)];
+				statement.setString(4, desc);
+				statement.setString(5, generateText(desc));
+				statement.setTimestamp(6, generatDate());
+				String uuid = copyImage("title", file);
+				String img = "/media/title/" + uuid;
+				statement.setString(7, img);
+				statement.addBatch();
+			}
 		}
 		statement.executeBatch();
 		statement.close();
@@ -188,12 +195,14 @@ public class DataGenerator {
 		return text;
 	}
 	
-	private static Date generatDate() {
+	private static Timestamp generatDate() {
 		int year = LocalDate.now().getYear() - RAND.nextInt(3);
 		int monthOfYear = RAND.nextInt(12) + 1;
 		int dayOfMonth = RAND.nextInt(29) + 1;
-		LocalDate date = new LocalDate(year, monthOfYear, dayOfMonth);
-		return new Date(date.toDate().getTime());
+		int hours = RAND.nextInt(24);
+		int mins = RAND.nextInt(60);
+		DateTime date = new DateTime(year, monthOfYear, dayOfMonth, hours, mins);
+		return new Timestamp(date.toDate().getTime());
 	}
 
 	private static void insertComments(Connection connection) throws SQLException {
@@ -204,7 +213,7 @@ public class DataGenerator {
 			statement.setLong(1, RAND.nextInt(totalAuthors) + 1);
 			statement.setLong(2, RAND.nextInt(totalArticles) + 1);
 			statement.setString(3, DUMMY_PAR[RAND.nextInt(DUMMY_PAR.length)]);
-			statement.setDate(4, generatDate());
+			statement.setTimestamp(4, generatDate());
 			statement.addBatch();
 		}
 		statement.executeBatch();

@@ -6,6 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "category")
@@ -19,6 +20,9 @@ public class Category implements Serializable {
 	
 	@Column(nullable = false, unique = true)
 	private String name;
+	
+	@Transient
+	private Integer count;
 
 	public Category() {
 		super();
@@ -38,6 +42,14 @@ public class Category implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public Integer getCount() {
+		return count;
+	}
+
+	public void setCount(Integer count) {
+		this.count = count;
 	}
 
 	@Override

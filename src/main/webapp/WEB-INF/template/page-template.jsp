@@ -7,7 +7,7 @@
 <title>Blog</title>
 <jsp:include page="../section/css.jsp" />
 </head>
-<body>
+<body class="body">
 	<jsp:include page="../section/header.jsp" />
 	<section>
 		<sitemesh:write property="body" />

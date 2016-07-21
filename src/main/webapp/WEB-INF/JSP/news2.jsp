@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <body>
 	<c:forEach var="category" items="${categories}">
-		<p class="text-info">${category} === ${count.get(category)}</p>
+		<p class="text-info">${category.id} == ${category.name} === ${category.count}</p>
 	</c:forEach>
 	<table class="table">
 		<c:forEach var="article" items="${articles}">

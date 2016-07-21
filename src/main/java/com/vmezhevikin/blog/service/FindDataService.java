@@ -1,15 +1,28 @@
 package com.vmezhevikin.blog.service;
 
 import java.util.List;
-import java.util.Map;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.vmezhevikin.blog.entity.Article;
 import com.vmezhevikin.blog.entity.Author;
+import com.vmezhevikin.blog.entity.Category;
+import com.vmezhevikin.blog.entity.Comment;
 
 public interface FindDataService {
+	
 	List<Author> findAllAuthors();
+
+	Page<Article> findAllArticles(Pageable pageable);
 	
-	List<Article> findAllArticles();
+	Article findArticleById(Long id);
 	
-	Map<String, Integer> findCategoryStatistic();
+	Page<Article> findAllArticlesByCategoryId(Short idCategory, Pageable pageable);
+
+	List<Category> findAllCategoriesWithStatistic();
+	
+	Category findCategoryById(Short id);
+	
+	List<Comment> findAllCommentsByArticleId(Long idArticle);
 }
