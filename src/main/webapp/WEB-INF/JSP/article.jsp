@@ -9,7 +9,7 @@
 						<a href="/news">News</a>
 					</li>
 					<li>
-						<a href="#">${article.category.name}</a>
+						<a href="/category/${article.category.id}">${article.category.name}</a>
 					</li>
 					<li class="active">${article.name}</li>
 				</ol>
@@ -40,7 +40,7 @@
 					<h3>${article.name}</h3>
 					<ul class="nav nav-pills">
 						<li role="presentation">
-							<a href="#">
+							<a href="/category/${article.category.id}">
 								<i class="fa fa-folder" aria-hidden="true"></i>
 								${article.category.name}
 							</a>

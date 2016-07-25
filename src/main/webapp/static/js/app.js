@@ -4,6 +4,7 @@
 		$('#fileInput').change(browseFile);
 		initRemoveArticleButton();
 		initPaginationButtons();
+		$('#signoutBtn').click(submitSignoutForm);
 	};
 
 	var chooseFile = function() {
@@ -23,18 +24,18 @@
 	var initPaginationButtons = function() {
 		var number = parseInt($('.pagination').attr('data-page-number'));
 		var total = parseInt($('.pagination').attr('data-page-total'));
-		var url = $('.pagination').attr('data-page-url');
+		var categoryUrl = $('.pagination').attr('data-category-url');
 		if (number == 0) {
 			$('#prev').addClass('disabled');
 		}
 		else {
-			$('#prev .pgLink').attr('href', url + '?page=' + (number - 1));
+			$('#prev .pgLink').attr('href', categoryUrl + '?page=' + (number - 1));
 		}
 		if (number == total - 1) {
 			$('#next').addClass('disabled');
 		}
 		else {
-			$('#next .pgLink').attr('href', url + '?page=' + (number + 1));
+			$('#next .pgLink').attr('href', categoryUrl + '?page=' + (number + 1));
 		}
 		var first, last, diff;
 		if (total > 5) {
@@ -59,13 +60,16 @@
 				if (pg == number) {
 					$('#btn' + n).addClass('active');
 				} else {
-					$('#btn' + n + ' .pgLink').attr('href', url + '?page=' + pg);
+					$('#btn' + n + ' .pgLink').attr('href', categoryUrl + '?page=' + pg);
 				}
 			}
 			else {
 				$('#btn' + n).addClass('hidden');
 			}
 		}
+	};
+	var submitSignoutForm = function() {
+		$('#signoutForm').submit();
 	};
 
 	init();

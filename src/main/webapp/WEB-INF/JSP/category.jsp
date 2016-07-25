@@ -80,7 +80,7 @@
 					</article>
 				</c:forEach>
 				<nav class="text-center">
-					<ul class="pagination" data-page-number="${page.number}" data-page-total="${page.totalPages}" data-page-url="${url}">
+					<ul class="pagination" data-page-number="${page.number}" data-page-total="${page.totalPages}" data-category-url="${categoryUrl}">
 						<li id="prev">
 							<a class="pgLink" aria-label="Previous">
 								<span aria-hidden="true">&laquo;</span>

@@ -14,48 +14,51 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.vmezhevikin.blog.Constants;
 import com.vmezhevikin.blog.entity.Article;
+import com.vmezhevikin.blog.exception.CantCompleteClientRequestException;
+import com.vmezhevikin.blog.service.EditDataService;
 import com.vmezhevikin.blog.service.FindDataService;
-import com.vmezhevikin.blog.service.StaticDataService;
 
 @Controller
 public class PublicDataController {
 
 	@Autowired
-	@SuppressWarnings(value = "unused")
-	private StaticDataService staticDataService;
-
-	@Autowired
 	private FindDataService findDataService;
+	
+	@Autowired
+	private EditDataService editDataService;
 
 	@RequestMapping(value = "/news", method = RequestMethod.GET)
 	public String getNews(Model model,
 			@PageableDefault(size = Constants.MAX_ARTICLES_PER_PAGE) @SortDefault(direction = Direction.DESC, sort = "date") Pageable pageable) {
-		return viewArticles(model, null, "/news", pageable);
+		
+		Page<Article> articles = findDataService.findAllArticles(pageable);
+		addCommonArticlesAttrToModel(model, articles, "/news");
+		return "category";
 	}
 
 	@RequestMapping(value = "/category/{id}", method = RequestMethod.GET)
 	public String getCategory(Model model, @PathVariable("id") Short id,
 			@PageableDefault(size = Constants.MAX_ARTICLES_PER_PAGE) @SortDefault(direction = Direction.DESC, sort = "date") Pageable pageable) {
-		return viewArticles(model, id, "/category/" + id, pageable);
+		
+		Page<Article> articles = findDataService.findAllArticlesByCategoryId(id, pageable);
+		addCommonArticlesAttrToModel(model, articles, "/category/" + id);
+		model.addAttribute("currentCategory", findDataService.findCategoryById(id));
+		return "category";
 	}
 
-	private String viewArticles(Model model, Short id, String url, Pageable pageable) {
-		Page<Article> articles = null;
-		if (id == null) {
-			articles = findDataService.findAllArticles(pageable);
-		} else {
-			articles = findDataService.findAllArticlesByCategoryId(id, pageable);
-			model.addAttribute("currentCategory", findDataService.findCategoryById(id));
-		}
+	private void addCommonArticlesAttrToModel(Model model, Page<Article> articles, String categoryUrl) {
 		model.addAttribute("articles", articles.getContent());
 		model.addAttribute("page", articles);
 		model.addAttribute("categories", findDataService.findAllCategoriesWithStatistic());
-		model.addAttribute("url", url);
-		return "category";
+		model.addAttribute("categoryUrl", categoryUrl);
 	}
 
 	@RequestMapping(value = "/article/{id}", method = RequestMethod.GET)
 	public String getArticle(Model model, @PathVariable("id") Long id) {
+		if (findDataService.countArticlesById(id) == 0) {
+			throw new CantCompleteClientRequestException("Can't find article with id " + id);
+		}
+		editDataService.incrementViewsForArticle(id);
 		model.addAttribute("categories", findDataService.findAllCategoriesWithStatistic());
 		model.addAttribute("article", findDataService.findArticleById(id));
 		model.addAttribute("comments", findDataService.findAllCommentsByArticleId(id));

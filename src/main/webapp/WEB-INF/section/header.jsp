@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 <header class="navbar navbar-default">
 	<div class="container-fluid">
 		<div class="navbar-header">
@@ -20,39 +21,64 @@
 				<button type="submit" class="btn btn-default">Find</button>
 			</form>
 			<ul class="nav navbar-nav navbar-right">
-				<li>
-					<a href="/sign-in">Sign-in</a>
-				</li>
-				<li>
-					<a href="/sign-out">Sign-up</a>
-				</li>
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-						Name
-						<span class="caret"></span>
-					</a>
-					<ul class="dropdown-menu">
-						<li>
-							<a href="/add-article">Add article</a>
-						</li>
-						<li>
-							<a href="/articles">All articles</a>
-						</li>
-						<li>
-							<a href="/edit-info">Edit profile</a>
-						</li>
-						<li>
-							<a href="/edit-password">Edit password</a>
-						</li>
-						<li role="separator" class="divider"></li>
-						<li>
-							<a href="/remove-profile">Remove</a>
-						</li>
-						<li>
-							<a href="/sign-out">Sign-out</a>
-						</li>
-					</ul>
-				</li>
+				<sec:authorize access="!hasAuthority('USER')">
+					<li>
+						<a href="/sign-in">Sign-in</a>
+					</li>
+					<li>
+						<a href="/sign-up">Sign-up</a>
+					</li>
+				</sec:authorize>
+				<sec:authorize access="hasAuthority('USER')">
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+							<sec:authentication property="principal.name" />
+							<span class="caret"></span>
+						</a>
+						<ul class="dropdown-menu">
+							<li>
+								<a href="/user/add-article">
+									<i class="fa fa-file-text-o" aria-hidden="true"></i>
+									Add article
+								</a>
+							</li>
+							<li>
+								<a href="/user/my-articles">
+									<i class="fa fa-files-o" aria-hidden="true"></i>
+									All articles
+								</a>
+							</li>
+							<li>
+								<a href="/user/edit-info">
+									<i class="fa fa-pencil" aria-hidden="true"></i>
+									Edit profile
+								</a>
+							</li>
+							<li>
+								<a href="/user/edit-password">
+									<i class="fa fa-unlock-alt" aria-hidden="true"></i>
+									Edit password
+								</a>
+							</li>
+							<li role="separator" class="divider"></li>
+							<li>
+								<a href="/user/remove">
+									<i class="fa fa-trash" aria-hidden="true"></i>
+									Remove
+								</a>
+							</li>
+							<li>
+								<form id="signoutForm" action="/sign-out" method="post">
+									<a id="signoutBtn">
+										<i class="fa fa-sign-out" aria-hidden="true"></i>
+										Sign-out
+									</a>
+									<sec:csrfInput />
+								</form>
+							</li>
+						</ul>
+					</li>
+				</sec:authorize>
 			</ul>
 		</div>
 	</div>

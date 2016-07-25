@@ -2,16 +2,22 @@ package com.vmezhevikin.blog.service.impl;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.vmezhevikin.blog.entity.Article;
 import com.vmezhevikin.blog.entity.Author;
 import com.vmezhevikin.blog.entity.Category;
 import com.vmezhevikin.blog.entity.Comment;
+import com.vmezhevikin.blog.model.CurrentUser;
 import com.vmezhevikin.blog.repository.storage.ArticleRepository;
 import com.vmezhevikin.blog.repository.storage.AuthorRepository;
 import com.vmezhevikin.blog.repository.storage.CategoryRepository;
@@ -19,7 +25,9 @@ import com.vmezhevikin.blog.repository.storage.CommentRepository;
 import com.vmezhevikin.blog.service.FindDataService;
 
 @Service
-public class FindDataServiceImpl implements FindDataService {
+public class FindDataServiceImpl implements FindDataService, UserDetailsService {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(FindDataServiceImpl.class);
 	
 	@Autowired
 	private AuthorRepository authorRepository;
@@ -39,8 +47,30 @@ public class FindDataServiceImpl implements FindDataService {
 	}
 
 	@Override
+	public Author findAuthorById(Long id) {
+		return authorRepository.findOne(id);
+	}
+	
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		Author author = authorRepository.findByName(username);
+		if (author != null) {
+			return new CurrentUser(author);
+		}
+		else {
+			LOGGER.error("Author not found by " + username);
+			throw new UsernameNotFoundException("Profile not found by " + username);
+		}
+	}
+
+	@Override
 	public Page<Article> findAllArticles(Pageable pageable) {
 		return articleRepository.findAll(pageable);
+	}
+
+	@Override
+	public int countArticlesById(Long id) {
+		return articleRepository.countById(id);
 	}
 
 	@Override

@@ -8,4 +8,6 @@ import com.vmezhevikin.blog.entity.Author;
 
 public interface AuthorRepository extends PagingAndSortingRepository<Author, Long> {
 	List<Author> findAll();
+	
+	Author findByName(String name);
 }

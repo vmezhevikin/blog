@@ -13,8 +13,12 @@ import com.vmezhevikin.blog.entity.Comment;
 public interface FindDataService {
 	
 	List<Author> findAllAuthors();
+	
+	Author findAuthorById(Long id);
 
 	Page<Article> findAllArticles(Pageable pageable);
+	
+	int countArticlesById(Long id);
 	
 	Article findArticleById(Long id);
 	

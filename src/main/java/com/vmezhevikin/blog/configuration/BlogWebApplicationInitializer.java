@@ -1,9 +1,12 @@
 package com.vmezhevikin.blog.configuration;
 
+import java.util.EnumSet;
+
 import javax.servlet.Filter;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
+import javax.servlet.SessionTrackingMode;
 
 import org.sitemesh.builder.SiteMeshFilterBuilder;
 import org.sitemesh.config.ConfigurableSiteMeshFilter;
@@ -13,6 +16,7 @@ import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
+import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.filter.RequestContextFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -24,10 +28,9 @@ public class BlogWebApplicationInitializer implements WebApplicationInitializer{
 	@Override
 	public void onStartup(ServletContext container) throws ServletException {
 		WebApplicationContext context = createWebApplicationContext(container);
-
+		container.setSessionTrackingModes(EnumSet.of(SessionTrackingMode.COOKIE));
 		container.addListener(new ContextLoaderListener(context));
 		container.addListener(context.getBean(ApplicationListener.class));
-
 		registerFilters(container, context);
 		registerSpribngMVCDispathcerServlet(container, context);
 	}
@@ -45,6 +48,7 @@ public class BlogWebApplicationInitializer implements WebApplicationInitializer{
 		registerFilter(container, new CharacterEncodingFilter("UTF-8", true));
 		registerFilter(container, new OpenEntityManagerInViewFilter());
 		registerFilter(container, new RequestContextFilter());
+		registerFilter(container, new DelegatingFilterProxy("springSecurityFilterChain"), "springSecurityFilterChain");
 		registerFilter(container, buildConfigurableSiteMeshFilter(), "sitemesh");
 	}
 
