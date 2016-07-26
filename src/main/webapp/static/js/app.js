@@ -5,6 +5,10 @@
 		initRemoveArticleButton();
 		initPaginationButtons();
 		$('#signoutBtn').click(submitSignoutForm);
+		initLoadAllComments();
+		$('#loadAllCommentBtn').click(loadAllComments);
+		$('#addCommentBtn').click(sendAddComment);
+		initDelCommentBtn();
 	};
 
 	var chooseFile = function() {
@@ -70,6 +74,101 @@
 	};
 	var submitSignoutForm = function() {
 		$('#signoutForm').submit();
+	};
+	var initLoadAllComments = function() {
+		$('#loadAllCommentIndicator').css('display', 'none');
+		var number = parseInt($('#commentContainer').attr('data-first-comments'));
+		var total = parseInt($('#commentContainer').attr('data-total-comments'));
+		if (number >= total) {
+			$('#comment-more').remove();
+		};
+	};
+	var initDelCommentBtn = function() {
+		var btns = $('.delCommentBtn');
+		btns.off('click', sendDelComment);
+		btns.on('click', sendDelComment);
+	};
+	var loadAllComments = function() {
+		var articleId = parseInt($('#commentContainer').attr('data-article-id'));
+		var url = '/comment/all?articleId=' + articleId;
+		
+		$('#loadAllCommentBtn').css('display', 'none');
+		$('#loadAllCommentIndicator').css('display', 'block');
+		$.ajax({
+			url : url,
+			success : function(data) {
+				$('#commentContainer').html(data);
+				$('#comment-more').remove();
+				initDelCommentBtn();
+			},
+			error : function(data) {
+				$('#loadAllCommentIndicator').css('display', 'none');
+				$('#loadAllCommentBtn').css('display', 'block');
+				errorAlert();
+			}
+		});
+	};
+	var sendAddComment = function() {
+		var url = "/user/comment/add";
+		var csrfToken = $('#csrfToken').val();
+		var articleId = $('#articleId').val();
+		var authorId = $('#authorId').val();
+		var text = $('#addCommentText').val();
+		var data = {
+			articleId: articleId,
+			authorId: authorId,
+			text: text
+		};
+		if (text !== '') {
+			$.ajaxSetup({
+		        headers: {
+		            'X-Csrf-Token': csrfToken
+		        }
+		    });
+			$.ajax({
+				url : url,
+				type: 'POST',
+				data: JSON.stringify(data),
+				contentType: 'application/json',
+				success : function(data) {
+					$('#commentContainer').prepend(data);
+					$('#addCommentText').val('');
+					initDelCommentBtn();
+				},
+				error : function(data) {
+					errorAlert();
+				}
+			});
+		};
+	};
+	var sendDelComment = function() {
+		var btn = $(this);
+		var url = "/user/comment/del";
+		var csrfToken = $('#csrfToken').val();
+		var commentId = btn.attr('data-comment-id');
+		$.ajaxSetup({
+	        headers: {
+	            'X-Csrf-Token': csrfToken
+	        }
+	    });
+		$.ajax({
+			url : url,
+			type: 'POST',
+			data: {
+				commentId: commentId
+			},
+			success : function(data) {
+				if (data.status === 'OK') {
+					$('#comment' + commentId).remove();
+				}
+			},
+			error : function(data) {
+				errorAlert();
+			}
+		});
+	};
+	var errorAlert = function() {
+		alert('Error! Try again later...');
 	};
 
 	init();

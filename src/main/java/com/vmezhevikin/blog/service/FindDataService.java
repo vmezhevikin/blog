@@ -22,11 +22,17 @@ public interface FindDataService {
 	
 	Article findArticleById(Long id);
 	
-	Page<Article> findAllArticlesByCategoryId(Short idCategory, Pageable pageable);
+	List<Article> findAllArticlesForCategory(Short idCategory);
+	
+	Page<Article> findArticlesForCategory(Short idCategory, Pageable pageable);
 
 	List<Category> findAllCategoriesWithStatistic();
 	
 	Category findCategoryById(Short id);
 	
-	List<Comment> findAllCommentsByArticleId(Long idArticle);
+	int countAllCommentsForArticle(Long idArticle);
+	
+	List<Comment> findAllCommentsForArticle(Long idArticle);
+	
+	List<Comment> findFirstNCommentsForArticle(Long idArticle, int number);
 }

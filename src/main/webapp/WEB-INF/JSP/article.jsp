@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="blog" tagdir="/WEB-INF/tags"%>
 <body>
 	<div class="container">
 		<div class="row">
@@ -36,7 +38,12 @@
 			</aside>
 			<div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
 				<article class="panel panel-body">
-					<img class="article-image" src="${article.image}" alt="Article image">
+					<c:if test="${article.image != null}">
+						<img class="article-image" src="${article.image}" alt="Article image">
+					</c:if>
+					<c:if test="${article.image == null}">
+						<img class="article-image" src="/static/img/blank-photo-sm.jpg" alt="Article image">
+					</c:if>
 					<h3>${article.name}</h3>
 					<ul class="nav nav-pills">
 						<li role="presentation">
@@ -71,26 +78,25 @@
 						</li>
 					</ul>
 					<div class="article-text">${article.text}</div>
-					<div class="comment">
-						<form action="comment" method="post">
-							<input type="hidden" name="idArticle" value="${article.id}">
-							<textarea class="comment-textarea" name="comment" placeholder="Type your comment here" rows="4"></textarea>
-							<input class="btn btn-primary" type="submit" value="Send">
-						</form>
-					</div>
-					<c:forEach var="comment" items="${comments}">
+					<sec:authorize access="hasAuthority('USER')">
+						<sec:authentication var="principalId" property="principal.id"/>
+						<sec:authentication var="principalName" property="principal.name"/>
 						<div class="comment">
-							<img class="comment-image" src="${comment.author.image}" alt="User image">
-							<div class="comment-text">
-								<h4>${comment.author.name}</h4>
-								<p>${comment.getDateAsFormattedString()}</p>
-								<p>${comment.text}</p>
-							</div>
+							<input id="articleId" type="hidden" value="${article.id}"/>
+							<input id="authorId" type="hidden" value="${principalId}"/>
+							<input id="csrfToken" type="hidden" value="${_csrf.token}"/>
+							<textarea id="addCommentText" class="comment-textarea" placeholder="Type your comment here" rows="4"></textarea>
+							<button id="addCommentBtn" class="btn btn-primary">Send</button>
 						</div>
-					</c:forEach>
-					<div class="comment-more">
-						<img id="loadMoreCommentIndicator" src="/media/img/loading.gif" alt="Loading...">
-						<button id="more-comment" class="btn btn-info">Show more...</button>
+					</sec:authorize>
+					<div id="commentContainer" data-article-id="${article.id}" data-total-comments="${totalComments}" data-first-comments="${firstComments}">
+						<c:forEach var="comment" items="${comments}">
+							<blog:comment comment="${comment}" />
+						</c:forEach>
+					</div>
+					<div class="comment-more" id="comment-more">
+						<img id="loadAllCommentIndicator" src="/static/img/loading.gif" alt="Loading...">
+						<button id="loadAllCommentBtn" class="btn btn-info">Show all...</button>
 					</div>
 				</article>
 			</div>

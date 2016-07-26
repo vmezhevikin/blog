@@ -8,6 +8,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -40,7 +41,7 @@ public class PublicDataController {
 	public String getCategory(Model model, @PathVariable("id") Short id,
 			@PageableDefault(size = Constants.MAX_ARTICLES_PER_PAGE) @SortDefault(direction = Direction.DESC, sort = "date") Pageable pageable) {
 		
-		Page<Article> articles = findDataService.findAllArticlesByCategoryId(id, pageable);
+		Page<Article> articles = findDataService.findArticlesForCategory(id, pageable);
 		addCommonArticlesAttrToModel(model, articles, "/category/" + id);
 		model.addAttribute("currentCategory", findDataService.findCategoryById(id));
 		return "category";
@@ -59,10 +60,18 @@ public class PublicDataController {
 			throw new CantCompleteClientRequestException("Can't find article with id " + id);
 		}
 		editDataService.incrementViewsForArticle(id);
+		model.addAttribute("comments", findDataService.findFirstNCommentsForArticle(id, Constants.FIRST_COMMENTS_PER_PAGE));
+		model.addAttribute("firstComments", Constants.FIRST_COMMENTS_PER_PAGE);
+		model.addAttribute("totalComments", findDataService.countAllCommentsForArticle(id));
 		model.addAttribute("categories", findDataService.findAllCategoriesWithStatistic());
 		model.addAttribute("article", findDataService.findArticleById(id));
-		model.addAttribute("comments", findDataService.findAllCommentsByArticleId(id));
 		return "article";
+	}
+	
+	@RequestMapping(value = "/comment/all", method = RequestMethod.GET)
+	public String getMoreComments(Model model, @ModelAttribute("articleId") Long id) {
+		model.addAttribute("comments", findDataService.findAllCommentsForArticle(id));
+		return "comment/all";
 	}
 
 	@RequestMapping(value = "/error", method = RequestMethod.GET)

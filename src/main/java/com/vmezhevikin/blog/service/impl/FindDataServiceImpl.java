@@ -79,7 +79,12 @@ public class FindDataServiceImpl implements FindDataService, UserDetailsService 
 	}
 
 	@Override
-	public Page<Article> findAllArticlesByCategoryId(Short idCategory, Pageable pageable) {
+	public List<Article> findAllArticlesForCategory(Short idCategory) {
+		return articleRepository.findByCategoryId(idCategory);
+	}
+
+	@Override
+	public Page<Article> findArticlesForCategory(Short idCategory, Pageable pageable) {
 		return articleRepository.findByCategoryId(idCategory, pageable);
 	}
 
@@ -99,7 +104,17 @@ public class FindDataServiceImpl implements FindDataService, UserDetailsService 
 	}
 
 	@Override
-	public List<Comment> findAllCommentsByArticleId(Long idArticle) {
-		return commentRepository.findByArtcileId(idArticle);
+	public int countAllCommentsForArticle(Long idArticle) {
+		return commentRepository.countAllByArticleId(idArticle);
+	}
+
+	@Override
+	public List<Comment> findAllCommentsForArticle(Long idArticle) {
+		return commentRepository.findAllByArticleId(idArticle);
+	}
+
+	@Override
+	public List<Comment> findFirstNCommentsForArticle(Long idArticle, int number) {
+		return commentRepository.findFirstNByArticleId(idArticle, number);
 	}
 }

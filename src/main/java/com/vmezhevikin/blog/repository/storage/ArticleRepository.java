@@ -1,5 +1,7 @@
 package com.vmezhevikin.blog.repository.storage;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
@@ -15,10 +17,12 @@ public interface ArticleRepository extends PagingAndSortingRepository<Article, L
 	int countByCategoryName(String name);
 	
 	int countById(Long id);
+	
+	List<Article> findByCategoryId(Short categoryId);
 
-	Page<Article> findByCategoryId(Short idCategory, Pageable pageable);
+	Page<Article> findByCategoryId(Short categoryId, Pageable pageable);
 	
 	@Modifying
 	@Query(value = "update blog.article set views = views + 1 where id = ?1", nativeQuery = true)
-	void incrementViewsForArticle(Long idArticle);
+	void incrementViewsForArticle(Long articleId);
 }

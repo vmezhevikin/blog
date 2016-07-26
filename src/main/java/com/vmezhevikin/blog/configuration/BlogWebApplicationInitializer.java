@@ -68,6 +68,8 @@ public class BlogWebApplicationInitializer implements WebApplicationInitializer{
 			@Override
 			protected void applyCustomConfiguration(SiteMeshFilterBuilder builder) {
 				builder.addDecoratorPath("/*", "/WEB-INF/template/page-template.jsp");
+				builder.addDecoratorPath("/comment/*", "/WEB-INF/template/comments-fragment.jsp");
+				builder.addDecoratorPath("/user/comment/*", "/WEB-INF/template/comments-fragment.jsp");
 			}
 		};
 	}

@@ -76,10 +76,7 @@ public class DataGenerator {
 
 				@Override
 				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-					String fileName = file.toFile().getName();
-					if (!fileName.contains("img") && !fileName.contains("loading")) {
-						Files.delete(file);
-					}
+					Files.delete(file);
 					return FileVisitResult.CONTINUE;
 				}
 

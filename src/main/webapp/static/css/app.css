@@ -32,6 +32,7 @@ html {
 
 .comment {
 	border-top: 1px solid #c1c1c1;
+	min-height: 140px;
 }
 
 .comment-image {
@@ -93,6 +94,10 @@ html {
 
 #fileInput {
 	display: none;
+}
+
+.delCommentBtn {
+	cursor: pointer;
 }
 
 #signoutBtn {
